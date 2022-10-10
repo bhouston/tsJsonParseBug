@@ -23,6 +23,10 @@ export type GraphJSON = {
    nodes: NodeJSON[];
 };
 
-
+// this fails to compile
 const graph: GraphJSON = rawGraphJSON;
 console.log( 'graph', graph);
+
+// this works, but I suspect it doesn't actually do any type checking here.
+const graph2 = rawGraphJSON as GraphJSON;
+console.log( 'graph2', graph);
