@@ -1,0 +1,36 @@
+{
+  "name": "tsJsonParseBug",
+  "version": "0.0.1",
+  "description": "TS bug?  Unsure. here is a reproduction.",
+  "type": "module",
+  "main": "dist/lib",
+  "types": "dist/lib/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "typescript",
+    "json",
+    "bug"
+  ],
+  "homepage": "http://github.com/bhouston/tsJsonParseBug",
+  "author": "behave-graph authors",
+  "bugs": {
+    "url": "https://github.com/bhouston/tsJsonParseBug/issues"
+  },
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bhouston/tsJsonParseBug"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.6",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.15",
+    "typescript": "^4.7.3"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}
