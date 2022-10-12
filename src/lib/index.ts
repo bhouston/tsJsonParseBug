@@ -51,27 +51,23 @@ type ToJSONType<U extends ToNodeType<string, NodeParameters>> =
     : {
         id: string,
         type: TTypeName,
-        parameters: (
-            TParameters extends undefined
-            ? undefined
-            : {
-                [K in keyof TParameters]:
+        parameters:
+        { [K in keyof TParameters]:
+            (
+                {
+                    value: TParameters[K]
+                } | {
+                    nodeId: string;
+                    socket: string;
+                } |
                 (
-                    {
-                        value: TParameters[K]
-                    } | {
-                        nodeId: string;
-                        socket: string;
-                    } |
-                    (
-                        // to allow skipping undefined values
-                        TParameters[K] extends undefined
-                        ? undefined
-                        : never
-                    )
+                    // to allow skipping undefined values
+                    TParameters[K] extends undefined
+                    ? undefined
+                    : never
                 )
-            }
-        )
+            )
+        }
     }
     : never;
 
