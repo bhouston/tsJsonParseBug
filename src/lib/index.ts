@@ -16,6 +16,6 @@ export type GraphJSON = {
    nodes: NodeJSON[];
 };
 
-// this fails to compile
+// this will no longer throw any errors, and doesn't cast anything which would mask problems in the json file
 const graph: GraphJSON = rawGraphJSON;
 console.log( 'graph', graph);
