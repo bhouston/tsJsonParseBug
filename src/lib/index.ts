@@ -8,7 +8,7 @@ type NodeParameters = Record<string, NodeParameterTypes> | undefined;
 // Simple solution, no run-time checks
 //*****************************************/
 
-interface importedJSON {
+interface ImportedJSON {
     nodes: {
         id: string;
         type: string;
@@ -25,7 +25,7 @@ interface importedJSON {
     }[]
 };
 
-const importedGraph: importedJSON = rawGraphJSON;
+const importedGraph: ImportedJSON = rawGraphJSON;
 console.log(importedGraph);
 
 
