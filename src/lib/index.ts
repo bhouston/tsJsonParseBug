@@ -1,32 +1,146 @@
-import * as rawGraphJSON from './graph.json'; 
+import * as rawGraphJSON from './graph.json';
 
-export type ValueJSON = string | boolean | number;
+type NodeParameterTypes = string | number | boolean;
 
-export type LinkJSON = { nodeId: string; socket: string };
+type NodeParameters = Record<string, NodeParameterTypes> | undefined;
 
-export type ParameterJSON = {
-    value?: ValueJSON;
-    link?: LinkJSON;
+//*****************************************/
+// Simple solution, no run-time checks
+//*****************************************/
+
+interface importedJSON {
+    nodes: {
+        id: string;
+        type: string;
+        parameters?: Record<string, {
+            value: NodeParameterTypes
+        } | {
+            nodeId: string;
+            socket: string;
+        } |
+            // I would assume this is necessary due to the way the 
+            // JSON import derives the types 
+            undefined
+        >
+    }[]
 };
 
-export type ParametersJSON = {
-    [key: string]: ParameterJSON;
-};
+const importedGraph: importedJSON = rawGraphJSON;
+console.log(importedGraph);
 
-export type NodeJSON = {
-    type: string;
+
+//***********************************************************/
+// More complicated with compile-time checks & intellisense
+//***********************************************************/
+type ToNodeType<
+    TTypeName extends string,
+    TParameters extends NodeParameters = undefined
+> = {
     id: string;
-    parameters?: ParametersJSON;
+    type: TTypeName;
+    parameters: TParameters;
+}
+
+type ToJSONType<U extends ToNodeType<string, NodeParameters>> =
+    U extends ToNodeType<infer TTypeName, infer TParameters>
+    ? TParameters extends undefined
+    ? {
+        id: string,
+        type: TTypeName,
+    }
+    : {
+        id: string,
+        type: TTypeName,
+        parameters: (
+            TParameters extends undefined
+            ? undefined
+            : {
+                [K in keyof TParameters]:
+                (
+                    {
+                        value: TParameters[K]
+                    } | {
+                        nodeId: string;
+                        socket: string;
+                    } |
+                    (
+                        // to allow skipping undefined values
+                        TParameters[K] extends undefined
+                        ? undefined
+                        : never
+                    )
+                )
+            }
+        )
+    }
+    : never;
+
+// define node-type parameters here, optional parameters supported
+
+type NodeType =
+    ToNodeType<"lifecycle/start"> |
+    ToNodeType<"action/log", { text: string }> |
+    ToNodeType<"flow/forLoop", { startIndex?: number, endIndex: number }>;
+
+
+interface JSONNodes {
+    nodes: ToJSONType<NodeType>[];
+}
+
+// This has full compile-time validation & Intellisense. 
+// (It even supports optional types.)
+const compileTimeErrorGraph: JSONNodes = {
+    "nodes": [
+        {
+            "type": "lifecycle/start",
+            "id": "0"
+        },
+        {
+            "type": "action/log",
+            "id": "1",
+            "parameters": {
+                "text": {
+                    "value": "Starting For Loop..."
+                }
+            }
+        },
+        {
+            "type": "flow/forLoop",
+            "id": "2",
+            "parameters": {
+                "startIndex": {
+                    "value": 0
+                },
+                "endIndex": {
+                    "value": 10
+                }
+            }
+        },
+        {
+            "type": "action/log",
+            "id": "3",
+            "parameters": {
+                "text": {
+                    "value": "Loop Body!"
+                }
+            }
+        },
+        {
+            "type": "action/log",
+            "id": "4",
+            "parameters": {
+                "text": {
+                    "value": "Completed For Loop!"
+                }
+            }
+        }
+    ]
 };
 
-export type GraphJSON = {
-   nodes: NodeJSON[];
-};
+console.log(compileTimeErrorGraph);
 
-// this fails to compile
-const graph: GraphJSON = rawGraphJSON;
-console.log( 'graph', graph);
 
-// this works, but I suspect it doesn't actually do any type checking here.
-const graph2 = rawGraphJSON as GraphJSON;
-console.log( 'graph2', graph);
+
+
+
+
