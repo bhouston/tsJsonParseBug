@@ -1,17 +1,10 @@
 import * as rawGraphJSON from './graph.json'; 
 
-export type ValueJSON = string | boolean | number;
+export type ValueJSON = { value: string | boolean | number };
 
-export type LinkJSON = { nodeId: string; socket: string };
+export type LinkJSON = { link: { nodeId: string; socket: string } };
 
-export type ParameterJSON = {
-    value?: ValueJSON;
-    link?: LinkJSON;
-};
-
-export type ParametersJSON = {
-    [key: string]: ParameterJSON;
-};
+export type ParametersJSON = { [key: string]: ValueJSON | LinkJSON | undefined };
 
 export type NodeJSON = {
     type: string;
@@ -23,10 +16,6 @@ export type GraphJSON = {
    nodes: NodeJSON[];
 };
 
-// this fails to compile
+// this will no longer throw any errors, and doesn't cast anything which would mask problems in the json file
 const graph: GraphJSON = rawGraphJSON;
 console.log( 'graph', graph);
-
-// this works, but I suspect it doesn't actually do any type checking here.
-const graph2 = rawGraphJSON as GraphJSON;
-console.log( 'graph2', graph);
